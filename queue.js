@@ -26,7 +26,7 @@ thumbnailQueue.process(async (job, done) => {
         console.error(`ThumbnailJob not found for imagePath: ${job.data.imagePath}`);
       }
       
-      done(null, thumbnailBase64);
+      done(null, { id: job.id, imagePath, thumbnailBase64 });
     } catch (err) {
       console.error(err);
       done(err);
