@@ -3,10 +3,17 @@ require('./db/db');
 const express = require('express');
 const port = process.env.PORT || 3000;
 const thumbnailsRouter = require('./routers/thumbnails');
+const jobStatusRouter = require('./routers/jobStatus');
+const fetchThumbnailRouter = require('./routers/fetchThumbnail');
+const listJobsRouter = require('./routers/listJobs');
 
 const app = express();
 
 app.use(express.json());
+
+app.use('/job-status', jobStatusRouter);
+app.use('/fetch-thumbnail', fetchThumbnailRouter);
+app.use('/list-jobs', listJobsRouter);
 app.use('/thumbnails', thumbnailsRouter);
 
 app.get('/', (req, res) => {

@@ -15,7 +15,7 @@ router.post('/', upload.single('image'), async (req, res, next) => {
       return res.status(400).send({ error: 'No image file provided' });
     }
     // Create the directory if it does not exist
-    const directoryPath = path.join(__dirname, 'images');
+    const directoryPath = path.join(__dirname, '../images');
     fs.mkdirSync(directoryPath, { recursive: true });
     // Save the image file to the file system
     const imagePath = path.join(directoryPath, file.originalname);

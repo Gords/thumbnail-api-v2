@@ -2,6 +2,9 @@
 logs
 *.log
 
+# Image folder
+images/
+
 # Dependency directories
 node_modules/
 

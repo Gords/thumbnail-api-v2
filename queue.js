@@ -10,7 +10,7 @@ const thumbnailQueue = new Queue('thumbnail');
 thumbnailQueue.process(async (job, done) => {
     try {
       const { imagePath } = job.data;
-      const thumbnailBuffer = await sharp(imagePath).resize(200, 200).toBuffer();
+      const thumbnailBuffer = await sharp(imagePath).resize(100, 100).toBuffer();
       const thumbnailBase64 = thumbnailBuffer.toString('base64');
       
       // Find the thumbnail job in the database using the imagePath
@@ -20,7 +20,7 @@ thumbnailQueue.process(async (job, done) => {
       if (thumbnailJob) {
         // Update the thumbnailUrl and status properties in the database
         thumbnailJob.thumbnailUrl = `data:image/jpeg;base64,${thumbnailBase64}`;
-        thumbnailJob.status = 'completed';
+        thumbnailJob.status = 'complete';
         await thumbnailJob.save();
       } else {
         console.error(`ThumbnailJob not found for imagePath: ${job.data.imagePath}`);
@@ -32,13 +32,25 @@ thumbnailQueue.process(async (job, done) => {
       done(err);
     }
   });
-  
-  
+
+// Add a job completion handler
+thumbnailQueue.on('completed', async (job, result) => {
+  const { id, imagePath, thumbnailBase64 } = result;
+  const thumbnailJob = await ThumbnailJob.findOneAndUpdate(
+    { _id: id, status: 'pending' },
+    { status: 'complete', thumbnailUrl: `data:image/jpeg;base64,${thumbnailBase64}` },
+    { new: true }
+  );
+  if (!thumbnailJob) {
+    console.error(`Job not found or already completed: ${id}`);
+  }
+});
 
 // Export the thumbnailQueue
 module.exports = {
   thumbnailQueue,
 };
+
 
 
 
